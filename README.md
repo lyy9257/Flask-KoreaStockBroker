@@ -49,6 +49,7 @@
         - None.
 
     - result (Example)
+        > http://127.0.0.1:5000/connection
 
             "broker": "DAISHIN",
             
@@ -66,7 +67,8 @@
         - None.
 
     - result (Example)
-        
+        > http://127.0.0.1:5000/accountinfo
+
             "name": (계좌 사용자 이름)
 
             "profit_amount": 0,
@@ -88,6 +90,11 @@
         - date_to : 조회종료날짜(default : 당일)
 
     - result (Example)
+        > http://127.0.0.1:5000/chart?code=A233740&n=20
+
+        > http://127.0.0.1:5000/chart?code=A233740&date_from=20200501
+
+        > http://127.0.0.1:5000/chart?code=A233740&date_from=20200501&date_to=20200701
 
             "index": 0,
             "date": 20201127,
@@ -108,6 +115,7 @@
         - code : 종목코드(Axxxxxx, Qxxxxxx)
 
     - result (Example)
+        > http://127.0.0.1:5000/stockfeatures?code=A207940
 
             "이름": "삼성바이오로직스",
             "증거금률(%)": 40,
@@ -168,10 +176,11 @@
      - method : GET
      
      - argument
-     - code : 종목코드(Axxxxxx, Qxxxxxx)
+       - code : 종목코드(Axxxxxx, Qxxxxxx)
 
      - result (Example)
-
+        > http://127.0.0.1:5000/short?code=A233740
+        
             "index": 0,
             "거래일": 20201127,
             "종가": 799000,
