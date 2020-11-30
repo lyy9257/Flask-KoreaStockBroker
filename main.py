@@ -86,12 +86,12 @@ def handle_short():
 @app.route('/marketeye', methods=['GET'])
 def marketeye():
     code_list = request.args.getlist('code', type=str)
-    print(code_list)
-    
+
     if not code_list:
         return '', 400
-
-    result = b.marketeye(code_list)
+        
+    code_ind_list = list(dict.fromkeys(code_list))
+    result = b.marketeye(code_ind_list)
     
     return result
 
