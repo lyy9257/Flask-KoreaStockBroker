@@ -12,6 +12,7 @@ class StockInfo():
         self.obj_CpTrade_CpTdUtil = win32com.client.Dispatch('CpTrade.CpTdUtil')
         self.obj_CpSysDib_MarketEye = win32com.client.Dispatch('CpSysDib.MarketEye')
         self.obj_CpSysDib_CpSvr7238 = win32com.client.Dispatch('CpSysDib.CpSvr7238')
+        self.obj_CpSysDib_CpMarketEye = win32com.client.Dispatch("CpSysDib.MarketEye")
 
         self.initCheck = self.obj_CpTrade_CpTdUtil.TradeInit(0)
 
@@ -134,3 +135,50 @@ class StockInfo():
         result = pd.DataFrame(data=list_item, columns=_keys).reset_index()
 
         return result
+
+    # 여러종목 데이터 호출
+    def get_MarketEye(self, code_list):
+        
+        ## 필요 데이터 설정
+        ## 코드, 종목명, 시간,
+        ## 현재가, 시가, 고가, 저가,
+        ## 매도호가, 매수호가, 거래량, 거래대금,
+        ## 총매도호가잔량, 총매수호가잔량, 최우선매도호가잔량, 최우선매수호가잔량 
+        _fields = (0, 17, 1, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16) 
+        _keys = ('종목코드', '시간', '현재가', '시가',
+            '고가', '저가', '매도호가', '매수호가', '거래량',
+            '거래대금', '총매도호가잔량', '총매수호가잔량',
+            '최우선매도호가잔량', '최우선매수호가잔량', '종목명' 
+        )
+        _sorted_keys = ['종목코드', '종목명', '시간', '현재가',
+            '시가', '고가', '저가', '매도호가', '매수호가',
+            '거래량', '거래대금', '총매도호가잔량', '총매수호가잔량',
+            '최우선매도호가잔량', '최우선매수호가잔량' 
+        ]
+
+        ## 입력 변수 설정
+        self.obj_CpSysDib_CpMarketEye.SetInputValue(0, _fields) # 요청 필드
+        self.obj_CpSysDib_CpMarketEye.SetInputValue(1, code_list)  # 종목코드 or 종목코드 리스트
+        
+        ## 요청
+        self.obj_CpSysDib_CpMarketEye.BlockRequest()
+
+        ## 호출 후 데이터 길이 확인
+        list_idx = self.obj_CpSysDib_CpMarketEye.GetHeaderValue(2)
+
+        ## 결과값 저장
+        res_value = []
+
+        for i in range(list_idx):
+            temp = []
+
+            for j in range(len(_fields)):
+                temp.append(self.obj_CpSysDib_CpMarketEye.GetDataValue(j, i))
+                
+            res_value.append(temp)
+        
+        res = pd.DataFrame(data=res_value, columns=_keys).reset_index()
+        result = res[_sorted_keys]
+        return result
+
+

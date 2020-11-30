@@ -94,6 +94,14 @@ class Broker():
 
         return result
 
+    ## 복수종목 조회
+    def marketeye(self, code_list):
+        self.con_broker.avoid_reqlimitwarning()
+        marketeye_data = self.stock_info.get_MarketEye(code_list)
+        result = json.dumps(json.loads(marketeye_data.to_json(orient='records')), indent=4, ensure_ascii=False)
+
+        return result
+        
     ## 매수
     def buy(self, acc, code, amount, price):
         self.con_broker.avoid_reqlimitwarning()

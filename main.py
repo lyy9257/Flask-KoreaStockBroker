@@ -70,7 +70,7 @@ def handle_stockfeatures():
 
     return res
 
-## 공매도
+## 공매도현황
 @app.route('/short', methods=['GET'])
 def handle_short():
     stockcode = request.args.get('code')
@@ -79,6 +79,19 @@ def handle_short():
         return '', 400
 
     result = b.get_stockshortselling(stockcode)
+    
+    return result
+
+# 여러종목 감시
+@app.route('/marketeye', methods=['GET'])
+def marketeye():
+    code_list = request.args.getlist('code', type=str)
+
+    if not code_list:
+        return '', 400
+        
+    code_ind_list = list(dict.fromkeys(code_list))
+    result = b.marketeye(code_ind_list)
     
     return result
 
