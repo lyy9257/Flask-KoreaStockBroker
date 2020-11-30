@@ -190,6 +190,12 @@
             "공매도비중": 0.0282,
             "공매도거래대금": 2007
 
+6. ### 다수종목 조회
+      - endpoint : /marketeye
+      - method : GET
+      - argument
+        - codelist : 종목코드(리스트 형태)
+        - [A233740]  
   
 * * *
 

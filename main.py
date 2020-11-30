@@ -70,7 +70,19 @@ def handle_stockfeatures():
 
     return res
 
-## 공매도
+## 공매도현황
+@app.route('/short', methods=['GET'])
+def handle_short():
+    stockcode = request.args.get('code')
+    
+    if not stockcode:
+        return '', 400
+
+    result = b.get_stockshortselling(stockcode)
+    
+    return result
+
+# 여러종목 감시
 @app.route('/short', methods=['GET'])
 def handle_short():
     stockcode = request.args.get('code')

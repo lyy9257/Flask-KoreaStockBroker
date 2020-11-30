@@ -134,3 +134,9 @@ class StockInfo():
         result = pd.DataFrame(data=list_item, columns=_keys).reset_index()
 
         return result
+
+    # 여러종목 데이터 호출
+    def get_MarketEye(self, code_list):
+        
+        # 필요 데이터 설정
+        _fields = []
