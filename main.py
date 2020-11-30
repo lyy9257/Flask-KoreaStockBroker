@@ -83,14 +83,15 @@ def handle_short():
     return result
 
 # 여러종목 감시
-@app.route('/short', methods=['GET'])
-def handle_short():
-    stockcode = request.args.get('code')
+@app.route('/marketeye', methods=['GET'])
+def marketeye():
+    code_list = request.args.getlist('code', type=str)
+    print(code_list)
     
-    if not stockcode:
+    if not code_list:
         return '', 400
 
-    result = b.get_stockshortselling(stockcode)
+    result = b.marketeye(code_list)
     
     return result
 
