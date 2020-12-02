@@ -42,7 +42,7 @@ class Order():
 
         rqRet = self.objStockOrder.GetDibMsg1()
                 
-        return [rqStatus, rqRet]
+        return (rqStatus, rqRet)
 
     ## 매도주문
     ## 계좌번호, 종목코드, 수량, 주문단가
@@ -56,7 +56,6 @@ class Order():
         
         # 주식 매도 주문
         accFlag = self.obj_CpTrade_CpTdUtil.GoodsList(acc, 1)  # 주식상품 구분
-        print(acc, accFlag[0], stock_code, amount, price)
 
         self.objStockOrder.SetInputValue(0, "1")   #  1: 매도
         self.objStockOrder.SetInputValue(1, acc)   #  계좌번호
@@ -77,4 +76,4 @@ class Order():
 
         rqRet = self.objStockOrder.GetDibMsg1()
                 
-        return [rqStatus, rqRet]
+        return (rqStatus, rqRet)
