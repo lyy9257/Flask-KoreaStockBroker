@@ -168,7 +168,6 @@
             "분기부채비율": 36.42,
             "최근분기년월": 202009
 
-
 5. ### 공매도정보 조회
     
      - endpoint : /short
@@ -237,14 +236,56 @@
                 "최우선매수호가잔량": 129132
             ]
 
+7. ### 매수
+    
+     - endpoint : /buy
 
-  
+     - method : GET
+     
+     - argument
+       - acc : 계좌번호
+       - front : 종목 앞 구분코드(A, Q)
+       - code : 종목코드 숫자
+       - amount : 수량
+       - price : 주문가격
+
+     - result (Example, 모의투자로 테스트)
+        > http://127.0.0.1:5000/buy?acc=(계좌번호)&front=A&code=233740&amount=1&price=13900
+        
+            {
+                "Server_Status": 200, 
+                "cybos_status": 0, 
+                "message": "0040 모의투자 매수 주문이 완료되었습니다.(ordss.cststkord)"
+            }
+
+
+8. ### 매도
+    
+     - endpoint : /sell
+
+     - method : GET
+     
+     - argument
+       - acc : 계좌번호
+       - front : 종목 앞 구분코드(A, Q)
+       - code : 종목코드 숫자
+       - amount : 수량
+       - price : 주문가격
+
+     - result (Example, 모의투자로 테스트)
+        > http://127.0.0.1:5000/sell?acc=(계좌번호)&front=A&code=233740&amount=1&price=13900
+        
+            {
+                "Server_Status": 200, 
+                "cybos_status": 0, 
+                "message": "0039 모의투자 매도 주문이 완료되었습니다.(ordss.cststkord)"
+            }
+    
 * * *
 
 ## **주요 사항**
-1. 매수, 매도 모듈은 구현되어 있으나 장중 테스트를 수행하지 않았습니다.
-   
-   현재 사용을 권장하지 않습니다.
+1. 이 프로그램을 사용하여 주식 종목을 매수, 매도함으로서 발생하는 수익과 손실에 대한 책임은 운용자에게 있습니다.
+2. LICENSE 
 
 * * *
 
