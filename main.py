@@ -107,6 +107,18 @@ def hogainfo():
     
     return result
 
+## 매매입체분석
+@app.route('/tradematrix', methods=['GET'])
+def tradematrix_info():
+    stockcode = request.args.get('code')
+
+    if not stockcode:
+        return 'stock code is none!', 400
+
+    result = b.tradematrix(stockcode)
+    
+    return result
+
 ## 매수
 @app.route('/buy', methods=['GET', 'DELETE'])
 def buy(): 

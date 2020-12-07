@@ -110,6 +110,13 @@ class Broker():
 
         return result
 
+    def tradematrix(self, code):
+        self.con_broker.avoid_reqlimitwarning()
+        matrix_data = self.stock_info.get_tradematrix(code)
+        result = json.dumps(json.loads(matrix_data.to_json(orient='records')), indent=4, ensure_ascii=False)
+
+        return result
+
     ## 매수
     def buy(self, acc, code, amount, price):
         self.con_broker.avoid_reqlimitwarning()

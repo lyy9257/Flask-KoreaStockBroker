@@ -228,30 +228,42 @@ class StockInfo():
 
         return result
 
-    def get_tradematrix(self, code, info)
+    def get_tradematrix(self, code):
         
         ## 필요데이터 선언
-        matrix_idx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        matrix_idx = [0, 14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
         matrix_col = [
-            '개인', '외국인', '기관계', '금융투자', '보험', '투신',
+            '날짜', '종가' ,'개인', '외국인', '기관계', '금융투자', '보험', '투신',
             '은행', '기타금융', '연기금등', '기타법인', '기타외인',
             '사모펀드', '국가지자체'
         ]
+        matrix_df = pd.DataFrame(columns = matrix_col)
 
-        ## 데이터 입력
+        ## 데이터 입력(종목코드)
         self.obj_CpSysDib_CpSvr7254.SetInputValue(0, code)
-        self.obj_CpSysDib_CpSvr7254.SetInputValue(1, 3)
-        self.obj_CpSysDib_CpSvr7254.SetInputValue(4, 0)
+        self.obj_CpSysDib_CpSvr7254.SetInputValue(1, 4)
+        self.obj_CpSysDib_CpSvr7254.SetInputValue(4, '1')
         self.obj_CpSysDib_CpSvr7254.SetInputValue(5, 0)
 
-        if info == 'amount':
-            self.obj_CpSysDib_CpSvr7254.SetInputValue(6, 1)
-        
-        elif info == 'money':
-            self.obj_CpSysDib_CpSvr7254.SetInputValue(6, 2)
+        ## 데이터 저장
+        self.obj_CpSysDib_CpSvr7254.BlockRequest()
 
-        self.obj_CpSysDib_CpSvr7254.SetInputValue(5, 0s)
+        ## 연속조회
+        while self.obj_CpSysDib_CpSvr7254.Continue:
+            self.obj_CpSysDib_CpSvr7254.BlockRequest()
+            data_len = self.obj_CpSysDib_CpSvr7254.GetHeaderValue(1)
 
-        
+            ## 연속 조회용 데이터프레임(데이터 이어붙이기)
+            temp_matrix_df = pd.DataFrame(columns = matrix_col)
 
+            ## 데이터 호출
+            for i in range(len(matrix_idx)):
+                t = matrix_idx[i]
+                temp_res = [self.obj_CpSysDib_CpSvr7254.GetDataValue(t, i) for i in range(data_len)]
+                temp_matrix_df[matrix_col[i]] = temp_res
 
+            matrix_df = pd.concat([matrix_df, temp_matrix_df]).reset_index(drop=True)
+
+        res = matrix_df[::-1].reset_index(drop=True)
+
+        return res
