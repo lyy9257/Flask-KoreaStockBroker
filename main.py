@@ -95,6 +95,18 @@ def marketeye():
     
     return result
 
+## 10단호가
+@app.route('/hogainfo', methods=['GET'])
+def hogainfo():
+    stockcode = request.args.get('code')
+    
+    if not stockcode:
+        return '', 400
+
+    result = b.hogainfo(stockcode)
+    
+    return result
+
 ## 매수
 @app.route('/buy', methods=['GET', 'DELETE'])
 def buy(): 

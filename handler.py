@@ -101,7 +101,15 @@ class Broker():
         result = json.dumps(json.loads(marketeye_data.to_json(orient='records')), indent=4, ensure_ascii=False)
 
         return result
-        
+    
+    ## 10단호가
+    def hogainfo(self, code):
+        self.con_broker.avoid_reqlimitwarning()
+        hoga_data = self.stock_info.get_hogainfo(code)
+        result = json.dumps(json.loads(hoga_data.to_json(orient='records')), indent=4, ensure_ascii=False)
+
+        return result
+
     ## 매수
     def buy(self, acc, code, amount, price):
         self.con_broker.avoid_reqlimitwarning()
