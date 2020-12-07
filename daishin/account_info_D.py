@@ -30,7 +30,7 @@ class Account():
 
         ## 결과값 리턴
         res = {
-            'name': name,
+            'acc_num': acc,
             'tot_amount':tot_amount,
             'profit_amount':profit_amount,
             'twoday_amount':twoday_amount
