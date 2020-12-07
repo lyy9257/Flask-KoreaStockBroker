@@ -7,12 +7,15 @@ class StockInfo():
 
     ## 초기화
     def __init__(self):
-        self.obj_CpUtil_CpCodeMgr = win32com.client.Dispatch('CpUtil.CpCodeMgr')
         self.obj_CpSysDib_StockChart = win32com.client.Dispatch('CpSysDib.StockChart')
-        self.obj_CpTrade_CpTdUtil = win32com.client.Dispatch('CpTrade.CpTdUtil')
         self.obj_CpSysDib_MarketEye = win32com.client.Dispatch('CpSysDib.MarketEye')
         self.obj_CpSysDib_CpSvr7238 = win32com.client.Dispatch('CpSysDib.CpSvr7238')
-        self.obj_CpSysDib_CpMarketEye = win32com.client.Dispatch("CpSysDib.MarketEye")
+        self.obj_CpSysDib_CpSvr7254 = win32com.client.Dispatch('CpSysDib.CpSvr7254')
+        self.obj_CpSysDib_CpMarketEye = win32com.client.Dispatch('CpSysDib.MarketEye')
+        self.obj_CbSysDib_CpStatus = win32com.client.Dispatch('CpUtil.CpCybos')
+        self.obj_CpTrade_CpTdUtil = win32com.client.Dispatch('CpTrade.CpTdUtil')
+        self.obj_CpUtil_CpCodeMgr = win32com.client.Dispatch('CpUtil.CpCodeMgr')
+        self.obj_CpSysDib_StockJpBid = win32com.client.Dispatch('Dscbo1.StockJpBid')
 
         self.initCheck = self.obj_CpTrade_CpTdUtil.TradeInit(0)
 
@@ -45,7 +48,7 @@ class StockInfo():
             '자기자본이익률(ROE)', '매출액증가율', '경상이익증가율', '순이익증가율', '투자심리', '매출액',
             '경상이익', '당기순이익', 'BPS', '영업이익증가율', '영업이익', '매출액영업이익률', '매출액경상이익률',
             '이자보상비율', '분기BPS', '분기매출액증가율', '분기영업이익증가율', '분기경상이익증가율', '분기순이익증가율',
-            '분기매출액', '분기영업이익', '분기경상이익', '분기당기순이익', '분개매출액영업이익률', '분기매출액경상이익률',
+            '분기매출액', '분기영업이익', '분기경상이익', '분기당기순이익', '분기매출액영업이익률', '분기매출액경상이익률',
             '분기ROE', '분기이자보상비율', '분기유보율', '분기부채비율', '최근분기년월'
         ]
 
@@ -74,6 +77,7 @@ class StockInfo():
         if date_to is None:
             date_to = datetime.today().strftime('%Y%m%d')
 
+        ## 필요 데이터 입력
         self.obj_CpSysDib_StockChart.SetInputValue(0, code) # 주식코드: A, 업종코드: U
 
         if n is not None:
@@ -91,6 +95,8 @@ class StockInfo():
         self.obj_CpSysDib_StockChart.SetInputValue(5, _fields)  # 필드
         self.obj_CpSysDib_StockChart.SetInputValue(6, ord(unit))
         self.obj_CpSysDib_StockChart.SetInputValue(9, ord('1')) # 0: 무수정주가, 1: 수정주가
+        
+        ## 호출
         self.obj_CpSysDib_StockChart.BlockRequest()
 
         length = self.obj_CpSysDib_StockChart.GetHeaderValue(3)
@@ -137,6 +143,7 @@ class StockInfo():
         return result
 
     # 여러종목 데이터 호출
+    ## input : code(list)
     def get_MarketEye(self, code_list):
         
         ## 필요 데이터 설정
@@ -179,6 +186,84 @@ class StockInfo():
         
         res = pd.DataFrame(data=res_value, columns=_keys).reset_index()
         result = res[_sorted_keys]
+        
         return result
 
+    ## 10단호가 호출
+    ## input : code(str)
+    def get_hogainfo(self, code):
+        
+        ## 필요 데이터 설정
+        buy_dataframe = pd.DataFrame(columns = ['매수매도여부', '호가', '잔량'])
+        sell_dataframe = pd.DataFrame(columns = ['매수매도여부', '호가', '잔량'])
 
+        sell_index = [3, 7, 11, 15, 19, 27, 31, 35, 39, 43] # 매도호가
+        sell_vol_index = [x + 2 for x in sell_index] # 매도잔량 
+        buy_index = [x + 1 for x in sell_index] # 매수호가
+        buy_vol_index = [x + 3 for x in sell_index] # 매수잔량
+
+        ## 데이터 입력(종목코드)
+        self.obj_CpSysDib_StockJpBid.SetInputValue(0, code)
+
+        ## 데이터 호출
+        self.obj_CpSysDib_StockJpBid.Subscribe()
+        
+        print(self.obj_CpSysDib_StockJpBid.GetHeaderValue(0))
+        print(self.obj_CpSysDib_StockJpBid.GetHeaderValue(1))
+        print(self.obj_CpSysDib_StockJpBid.GetHeaderValue(2))
+
+        buy_dataframe['매수매도여부'] = ['매수'] * 10
+        buy_dataframe['호가'] = [self.obj_CpSysDib_StockJpBid.GetHeaderValue(x) for x in buy_index]
+        buy_dataframe['잔량'] = [self.obj_CpSysDib_StockJpBid.GetHeaderValue(x) for x in buy_vol_index]
+
+        sell_dataframe['매수매도여부'] = ['매도'] * 10
+        sell_dataframe['호가'] = [self.obj_CpSysDib_StockJpBid.GetHeaderValue(x) for x in sell_index]
+        sell_dataframe['잔량'] = [self.obj_CpSysDib_StockJpBid.GetHeaderValue(x) for x in sell_vol_index]    
+        
+        self.obj_CpSysDib_StockJpBid.UnSubscribe()
+        
+        print(buy_dataframe, sell_dataframe)
+
+        result = pd.concat([buy_dataframe, sell_dataframe]).reset_index(drop=True)
+
+        return result
+
+    def get_tradematrix(self, code):
+        
+        ## 필요데이터 선언
+        matrix_idx = [0, 14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        matrix_col = [
+            '날짜', '종가' ,'개인', '외국인', '기관계', '금융투자', '보험', '투신',
+            '은행', '기타금융', '연기금등', '기타법인', '기타외인',
+            '사모펀드', '국가지자체'
+        ]
+        matrix_df = pd.DataFrame(columns = matrix_col)
+
+        ## 데이터 입력(종목코드)
+        self.obj_CpSysDib_CpSvr7254.SetInputValue(0, code)
+        self.obj_CpSysDib_CpSvr7254.SetInputValue(1, 4)
+        self.obj_CpSysDib_CpSvr7254.SetInputValue(4, '1')
+        self.obj_CpSysDib_CpSvr7254.SetInputValue(5, 0)
+
+        ## 데이터 저장
+        self.obj_CpSysDib_CpSvr7254.BlockRequest()
+
+        ## 연속조회
+        while self.obj_CpSysDib_CpSvr7254.Continue:
+            self.obj_CpSysDib_CpSvr7254.BlockRequest()
+            data_len = self.obj_CpSysDib_CpSvr7254.GetHeaderValue(1)
+
+            ## 연속 조회용 데이터프레임(데이터 이어붙이기)
+            temp_matrix_df = pd.DataFrame(columns = matrix_col)
+
+            ## 데이터 호출
+            for i in range(len(matrix_idx)):
+                t = matrix_idx[i]
+                temp_res = [self.obj_CpSysDib_CpSvr7254.GetDataValue(t, i) for i in range(data_len)]
+                temp_matrix_df[matrix_col[i]] = temp_res
+
+            matrix_df = pd.concat([matrix_df, temp_matrix_df]).reset_index(drop=True)
+
+        res = matrix_df[::-1].reset_index(drop=True)
+
+        return res
