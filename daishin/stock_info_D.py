@@ -2,6 +2,7 @@
 import win32com.client
 from datetime import datetime
 import pandas as pd
+import time
 
 class StockInfo():
 
@@ -15,7 +16,7 @@ class StockInfo():
         self.obj_CbSysDib_CpStatus = win32com.client.Dispatch('CpUtil.CpCybos')
         self.obj_CpTrade_CpTdUtil = win32com.client.Dispatch('CpTrade.CpTdUtil')
         self.obj_CpUtil_CpCodeMgr = win32com.client.Dispatch('CpUtil.CpCodeMgr')
-        self.obj_CpSysDib_StockJpBid = win32com.client.Dispatch('Dscbo1.StockJpBid')
+        self.obj_DsCbo1_StockMst = win32com.client.Dispatch("DsCbo1.StockMst")
 
         self.initCheck = self.obj_CpTrade_CpTdUtil.TradeInit(0)
 
@@ -191,39 +192,27 @@ class StockInfo():
 
     ## 10단호가 호출
     ## input : code(str)
-    def get_hogainfo(self, code):
+    def get_hogainfo(self, code, k):
         
         ## 필요 데이터 설정
         buy_dataframe = pd.DataFrame(columns = ['매수매도여부', '호가', '잔량'])
         sell_dataframe = pd.DataFrame(columns = ['매수매도여부', '호가', '잔량'])
-
-        sell_index = [3, 7, 11, 15, 19, 27, 31, 35, 39, 43] # 매도호가
-        sell_vol_index = [x + 2 for x in sell_index] # 매도잔량 
-        buy_index = [x + 1 for x in sell_index] # 매수호가
-        buy_vol_index = [x + 3 for x in sell_index] # 매수잔량
+        k = int(k)
 
         ## 데이터 입력(종목코드)
-        self.obj_CpSysDib_StockJpBid.SetInputValue(0, code)
+        self.obj_DsCbo1_StockMst.SetInputValue(0, code)
 
         ## 데이터 호출
-        self.obj_CpSysDib_StockJpBid.Subscribe()
-        
-        print(self.obj_CpSysDib_StockJpBid.GetHeaderValue(0))
-        print(self.obj_CpSysDib_StockJpBid.GetHeaderValue(1))
-        print(self.obj_CpSysDib_StockJpBid.GetHeaderValue(2))
+        self.obj_DsCbo1_StockMst.BlockRequest()
 
-        buy_dataframe['매수매도여부'] = ['매수'] * 10
-        buy_dataframe['호가'] = [self.obj_CpSysDib_StockJpBid.GetHeaderValue(x) for x in buy_index]
-        buy_dataframe['잔량'] = [self.obj_CpSysDib_StockJpBid.GetHeaderValue(x) for x in buy_vol_index]
-
-        sell_dataframe['매수매도여부'] = ['매도'] * 10
-        sell_dataframe['호가'] = [self.obj_CpSysDib_StockJpBid.GetHeaderValue(x) for x in sell_index]
-        sell_dataframe['잔량'] = [self.obj_CpSysDib_StockJpBid.GetHeaderValue(x) for x in sell_vol_index]    
+        buy_dataframe['매수매도여부'] = ['매수'] * k
+        buy_dataframe['호가'] = [self.obj_DsCbo1_StockMst.GetDataValue(1, x)  for x in range(k)] # 매수호가
+        buy_dataframe['잔량'] = [self.obj_DsCbo1_StockMst.GetDataValue(3, x) for x in range(k)]  # 매수호가 잔량
         
-        self.obj_CpSysDib_StockJpBid.UnSubscribe()
+        sell_dataframe['매수매도여부'] = ['매도'] * k
+        sell_dataframe['호가'] = [self.obj_DsCbo1_StockMst.GetDataValue(0, x) for x in range(k)]
+        sell_dataframe['잔량'] = [self.obj_DsCbo1_StockMst.GetDataValue(2, x) for x in range(k)]    
         
-        print(buy_dataframe, sell_dataframe)
-
         result = pd.concat([buy_dataframe, sell_dataframe]).reset_index(drop=True)
 
         return result

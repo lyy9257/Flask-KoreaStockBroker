@@ -64,7 +64,7 @@ def handle_stockfeatures():
     stockcode = request.args.get('code')
 
     if not stockcode:
-        return '', 400
+        return 'stock code is none!', 400
 
     res = b.get_stockfeatures(stockcode)
 
@@ -76,7 +76,7 @@ def handle_short():
     stockcode = request.args.get('code')
     
     if not stockcode:
-        return '', 400
+        return 'stock code is none!', 400
 
     result = b.get_stockshortselling(stockcode)
     
@@ -88,7 +88,7 @@ def marketeye():
     code_list = request.args.getlist('code', type=str)
 
     if not code_list:
-        return '', 400
+        return 'stock code is none!', 400
         
     code_ind_list = list(dict.fromkeys(code_list))
     result = b.marketeye(code_ind_list)
@@ -99,11 +99,12 @@ def marketeye():
 @app.route('/hogainfo', methods=['GET'])
 def hogainfo():
     stockcode = request.args.get('code')
-    
-    if not stockcode:
-        return '', 400
+    k = request.args.get('k')
 
-    result = b.hogainfo(stockcode)
+    if not stockcode:
+        return 'stock code is none!', 400
+
+    result = b.hogainfo(stockcode, k)
     
     return result
 
