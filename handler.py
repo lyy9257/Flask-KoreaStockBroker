@@ -103,9 +103,9 @@ class Broker():
         return result
     
     ## 10단호가
-    def hogainfo(self, code):
+    def hogainfo(self, code, k):
         self.con_broker.avoid_reqlimitwarning()
-        hoga_data = self.stock_info.get_hogainfo(code)
+        hoga_data = self.stock_info.get_hogainfo(code, k)
         result = json.dumps(json.loads(hoga_data.to_json(orient='records')), indent=4, ensure_ascii=False)
 
         return result
