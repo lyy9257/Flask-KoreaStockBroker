@@ -234,7 +234,7 @@ class StockInfo():
         self.obj_CpSysDib_CpSvr7254.SetInputValue(4, '1')
         self.obj_CpSysDib_CpSvr7254.SetInputValue(5, 0)
 
-        ## 데이터 저장
+        ## 데이터 호출(최초 1회)
         self.obj_CpSysDib_CpSvr7254.BlockRequest()
 
         ## 연속조회

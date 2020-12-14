@@ -1,10 +1,12 @@
 # 대신증권 - 계좌정보
+import pandas as pd
 import win32com.client
 
 class Account():
+
+    ## 초기화
     def __init__(self):
         self.obj_CpTrade_CpTdUtil = win32com.client.Dispatch('CpTrade.CpTdUtil')
-        self.obj_CpTrade_CpTd6032 = win32com.client.Dispatch("CpTrade.CpTd6032")
         self.obj_CpTrade_CpTd6033 = win32com.client.Dispatch("CpTrade.CpTd6033")
 
         self.initCheck = self.obj_CpTrade_CpTdUtil.TradeInit(0)
@@ -38,50 +40,42 @@ class Account():
 
         return res
 
-    ## 계좌잔고 조회
-    def request6032(self):
-        bIsFist = True
+    ## 주식잔고 조회(6033)
+    def account_stock_info(self):
 
-        while True:
-            self.obj_CpTrade_CpTd6032.BlockRequest()
-            # 통신 및 통신 에러 처리
-            rqStatus = self.obj_CpTrade_CpTd6032.GetDibStatus()
-            rqRet = self.obj_CpTrade_CpTd6032.GetDibMsg1()
+        ## 필요데이터 선언
+        stock_account_idx = [12, 0, 3, 7, 17, 18, 11, 15]
+        stock_account_col = [
+            '종목코드', '종목명', '(결제)잔고수량', '(체결)잔고수량', 
+            '체결장부단가', '손익단가', '수익률', '매도가능수량'
+        ]
+        stock_account_df = pd.DataFrame(columns = stock_account_col)
+    
 
-            print("통신상태", rqStatus, rqRet)
-            if rqStatus != 0:
-                return False
- 
-            cnt = self.obj_CpTrade_CpTd6032.GetHeaderValue(0)
+        ### 계좌정보 호출
+        acc = self.obj_CpTrade_CpTdUtil.AccountNumber[0] #계좌번호
+        accFlag = self.obj_CpTrade_CpTdUtil.GoodsList(acc, 1)  # 주식상품 구분
 
-            print('데이터 조회 개수', cnt)
- 
-            # 헤더 정보는 한번만 처리
-            if bIsFist == True:
-                sumJango = self.obj_CpTrade_CpTd6032.GetHeaderValue(1)
-                sumSellM = self.obj_CpTrade_CpTd6032.GetHeaderValue(2)
-                sumRate = self.obj_CpTrade_CpTd6032.GetHeaderValue(3)
+        ### 필요 데이터 입력
+        self.obj_CpTrade_CpTd6033.SetInputValue(0, acc)
+        self.obj_CpTrade_CpTd6033.SetInputValue(1, accFlag[0])
+        self.obj_CpTrade_CpTd6033.SetInputValue(2, 50)
+        self.obj_CpTrade_CpTd6033.SetInputValue(3, '2') # 0프로 기준 수익률 출력
 
-                print('잔량평가손익', sumJango, '매도실현손익',sumSellM, '수익률',sumRate)
+        self.obj_CpTrade_CpTd6033.BlockRequest()
+        
+        data_len = self.obj_CpTrade_CpTd6033.GetHeaderValue(7)
+        print(data_len)
+        ## 연속 조회용 데이터프레임(데이터 이어붙이기)
+        temp_stock_account_df = pd.DataFrame(columns = stock_account_col)
 
-                bIsFist = False
- 
-            for i in range(cnt):
-                item = {}
-                item['종목코드'] = self.obj_CpTrade_CpTd6032.GetDataValue(12, i)  # 종목코드
-                item['종목명'] = self.obj_CpTrade_CpTd6032.GetDataValue(0, i)  # 종목명
-                item['전일잔고'] = self.obj_CpTrade_CpTd6032.GetDataValue(2, i)
-                item['금일매수수량'] = self.obj_CpTrade_CpTd6032.GetDataValue(3, i)
-                item['금일매도수량'] = self.obj_CpTrade_CpTd6032.GetDataValue(4, i)
-                item['금일잔고'] = self.obj_CpTrade_CpTd6032.GetDataValue(5, i)
-                item['평균매입단가'] = self.obj_CpTrade_CpTd6032.GetDataValue(6, i)
-                item['평균매도단가'] = self.obj_CpTrade_CpTd6032.GetDataValue(7, i)
-                item['현재가'] = self.obj_CpTrade_CpTd6032.GetDataValue(8, i)
-                item['잔량평가손익'] = self.obj_CpTrade_CpTd6032.GetDataValue(9, i)
-                item['매도실현손익'] = self.obj_CpTrade_CpTd6032.GetDataValue(10, i)
-                item['수익률'] = self.obj_CpTrade_CpTd6032.GetDataValue(11, i)
+        ## 데이터 호출
+        for i in range(len(stock_account_col)):
+            t = stock_account_idx[i]
+            temp_res = [self.obj_CpTrade_CpTd6033.GetDataValue(t, i) for i in range(data_len)]
+            temp_stock_account_df[stock_account_col[i]] = temp_res
 
-            if (self.obj_CpTrade_CpTd6032.Continue == False):
-                break
+        stock_account_df = pd.concat(
+            [stock_account_df, temp_stock_account_df]).reset_index(drop=True)
 
-        return True
+        return stock_account_df

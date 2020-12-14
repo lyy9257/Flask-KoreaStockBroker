@@ -50,14 +50,12 @@
 
     - result (Example)
         > http://127.0.0.1:5000/connection
-
+        
             "broker": "DAISHIN",
-            
             "res": "연결되었습니다.",
-            
             "status": 200
 
-2. ### 계좌 조회
+2. ### 계좌금액 조회
 
     - endpoint : /accountinfo
 
@@ -69,15 +67,34 @@
     - result (Example)
         > http://127.0.0.1:5000/accountinfo
 
-            "name": (계좌 사용자 이름)
-
+            "name": (계좌 사용자 이름) ,
             "profit_amount": 0,
-
             "tot_amount": 0,
-
             "twoday_amount": (D+2 예수금)       
 
-3. ### 차트 데이터 조회
+3. ### 주식잔고 조회
+
+    - endpoint : /stockaccountinfo
+
+    - method : GET
+
+    - argument
+        - None.
+
+    - result (Example)
+        > http://127.0.0.1:5000/stockaccountinfo
+
+            {
+                "종목코드": "A233740",
+                "종목명": "KODEX 코스닥150 레버리지",
+                "(체결)잔고수량": 1,
+                "매수평단가": 13875,
+                "손익단가": 13878,
+                "수익률": 12.8760654346,
+                "매도가능수량": 1
+            }
+
+4. ### 차트 데이터 조회
 
     - endpoint : /chart
 
@@ -105,7 +122,8 @@
             "volume": 32898683,
             "vol_amount": 437723000000
 
-4. ### 종목정보 조회
+
+5. ### 종목정보 조회
 
     - endpoint : /stockfeatures
 
@@ -168,7 +186,7 @@
             "분기부채비율": 36.42,
             "최근분기년월": 202009
 
-5. ### 공매도정보 조회
+6. ### 공매도정보 조회
     
      - endpoint : /short
 
@@ -189,7 +207,8 @@
             "공매도비중": 0.0282,
             "공매도거래대금": 2007
 
-6. ### 다수종목 조회 (CYBOS MarketEye)
+7. ### 다수종목 조회 (CYBOS MarketEye)
+
       - endpoint : /marketeye
   
       - method : GET
@@ -236,7 +255,7 @@
                 "최우선매수호가잔량": 129132
             ]
 
-7. ### 매수
+8. ### 매수
     
      - endpoint : /buy
 
@@ -259,7 +278,7 @@
             }
 
 
-8. ### 매도
+9. ### 매도
     
      - endpoint : /sell
 
@@ -282,7 +301,7 @@
             }
     
 
-9. ### 매매입체분석 (대신증권 매매입체분석)
+10. ### 매매입체분석 (대신증권 매매입체분석)
      - [대신증권 투자주체별 현황(7254) 참고링크](https://m.blog.naver.com/songtong/220941944898)
      - endpoint : /tradematrix
 
@@ -331,7 +350,11 @@
 
             (후략, 6개월치 데이터가 불러와집니다.) 
 
+<<<<<<< HEAD
 10. ### 호가잔량 호출
+=======
+11. ### 호가잔량 호출
+>>>>>>> 63073909714fba5bae8155d988104d4cd1b73c7a
      - endpoint : /hogainfo
 
      - method : GET
