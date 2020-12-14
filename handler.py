@@ -70,6 +70,14 @@ class Broker():
 
         return result
 
+    ## 주식 잔고정보 요청
+    def account_stockinfo(self):
+        self.con_broker.avoid_reqlimitwarning()
+        acc_stockdata = self.acc_info.account_stock_info()
+        result = json.dumps(json.loads(acc_stockdata.to_json(orient='records')), indent=4, ensure_ascii=False)
+
+        return result
+
     ## 종목정보
     def get_stockfeatures(self, code):
         self.con_broker.avoid_reqlimitwarning()

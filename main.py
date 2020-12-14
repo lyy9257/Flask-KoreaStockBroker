@@ -37,6 +37,13 @@ def get_acc_info():
     
     return jsonify(res)
 
+## 계좌정보
+@app.route('/stockaccountinfo', methods=['GET'])
+def get_acc_stock_info():
+    res = b.account_stockinfo()
+    
+    return res
+
 ## 차트정보
 @app.route('/chart', methods=['GET'])
 def chart_data():
@@ -51,7 +58,7 @@ def chart_data():
     if not (n or date_from):
         res = {
             'status' : 400,
-            'result' : 'Need to provide "n" or "date_from" argument.'
+            'res' : 'Need to provide "n" or "date_from" argument.'
         }
 
     res = b.get_price(stockcode, n, date_from, date_to)
@@ -78,9 +85,9 @@ def handle_short():
     if not stockcode:
         return 'stock code is none!', 400
 
-    result = b.get_stockshortselling(stockcode)
+    res = b.get_stockshortselling(stockcode)
     
-    return result
+    return res
 
 # 여러종목 감시
 @app.route('/marketeye', methods=['GET'])
@@ -91,9 +98,9 @@ def marketeye():
         return 'stock code is none!', 400
         
     code_ind_list = list(dict.fromkeys(code_list))
-    result = b.marketeye(code_ind_list)
+    res = b.marketeye(code_ind_list)
     
-    return result
+    return res
 
 ## 10단호가
 @app.route('/hogainfo', methods=['GET'])
@@ -104,9 +111,9 @@ def hogainfo():
     if not stockcode:
         return 'stock code is none!', 400
 
-    result = b.hogainfo(stockcode, k)
+    res = b.hogainfo(stockcode, k)
     
-    return result
+    return res
 
 ## 매매입체분석
 @app.route('/tradematrix', methods=['GET'])
@@ -116,9 +123,9 @@ def tradematrix_info():
     if not stockcode:
         return 'stock code is none!', 400
 
-    result = b.tradematrix(stockcode)
+    res = b.tradematrix(stockcode)
     
-    return result
+    return res
 
 ## 매수
 @app.route('/buy', methods=['GET', 'DELETE'])
