@@ -67,7 +67,7 @@
     - result (Example)
         > http://127.0.0.1:5000/accountinfo
 
-            "name": (계좌 사용자 이름)
+            "name": (계좌 사용자 이름) ,
             "profit_amount": 0,
             "tot_amount": 0,
             "twoday_amount": (D+2 예수금)       
@@ -350,7 +350,11 @@
 
             (후략, 6개월치 데이터가 불러와집니다.) 
 
+<<<<<<< HEAD
+10. ### 호가잔량 호출
+=======
 11. ### 호가잔량 호출
+>>>>>>> 63073909714fba5bae8155d988104d4cd1b73c7a
      - endpoint : /hogainfo
 
      - method : GET

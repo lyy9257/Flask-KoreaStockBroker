@@ -3,6 +3,8 @@ import pandas as pd
 import win32com.client
 
 class Account():
+
+    ## 초기화
     def __init__(self):
         self.obj_CpTrade_CpTdUtil = win32com.client.Dispatch('CpTrade.CpTdUtil')
         self.obj_CpTrade_CpTd6033 = win32com.client.Dispatch("CpTrade.CpTd6033")
