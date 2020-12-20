@@ -217,6 +217,7 @@ class StockInfo():
 
         return result
 
+    ### 매도동향
     def get_tradematrix(self, code):
         
         ## 필요데이터 선언
