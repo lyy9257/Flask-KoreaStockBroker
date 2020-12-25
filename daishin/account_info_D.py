@@ -78,4 +78,6 @@ class Account():
         stock_account_df = pd.concat(
             [stock_account_df, temp_stock_account_df]).reset_index(drop=True)
 
+        stock_account_df['수익률'] = stock_account_df['수익률'].round(2).astype(str)
+        
         return stock_account_df
