@@ -131,12 +131,12 @@ def tradematrix_info():
 @app.route('/buy', methods=['GET', 'DELETE'])
 def buy(): 
     acc = request.args.get('acc')
-    front_code = request.args.get('front')
-    code = request.args.get('code')
+    # front_code = request.args.get('front')
+    stock_code = request.args.get('code')
     amount = request.args.get('amount')
     price = request.args.get('price')
     
-    stock_code = front_code + str(code)
+    # stock_code = front_code + str(code)
 
     ## 파라미터 확인
     if request.method == 'GET':
@@ -153,12 +153,12 @@ def buy():
 @app.route('/sell', methods=['GET', 'DELETE'])
 def sell(): 
     acc = request.args.get('acc')
-    front_code = request.args.get('front')
-    code = request.args.get('code')
+    # front_code = request.args.get('front')
+    stock_code = request.args.get('code')
     amount = request.args.get('amount')
     price = request.args.get('price')
     
-    stock_code = front_code + str(code)
+    # stock_code = front_code + str(code)
 
     ## 파라미터 확인
     if request.method == 'GET':

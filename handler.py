@@ -118,6 +118,7 @@ class Broker():
 
         return result
 
+    ## 매수원
     def tradematrix(self, code):
         self.con_broker.avoid_reqlimitwarning()
         matrix_data = self.stock_info.get_tradematrix(code)
